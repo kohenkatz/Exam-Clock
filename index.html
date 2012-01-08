@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Time</title>
+</head>
+<body>
+<div id="inputs" style="float:right;">
+	<input type="text" id="from">
+    <input type="text" id="to">
+    <input type="button" onClick="setTimes(); return false;" 
+value="Update">
+</div>
+<br style="clear:both;" />
+<div id="timenow" style="text-align:center; font-size: 200px; margin-top: 
+100px;"></div>
+
+<div id="elapsed" style="width:150px; text-align:right; position:absolute; 
+bottom:10px; left:0;"></div>
+
+<div id="bar" style="position:absolute; height: 20px; padding: 5px; 
+bottom: 5px; left: 160px; right: 160px; border: 1px solid #999; 
+overflow:hidden;">
+	<div id="inner" style="width: 0; background:#00c; height: 
+20px;"></div>
+</div>
+
+<div id="remaining" style="text-align:left; width: 150px; 
+position:absolute; bottom:10px; right:0;"></div>
+
+<script type="text/javascript">
+var txtTime = document.getElementById('timenow');
+var txtElapsed = document.getElementById('elapsed');
+var bar = document.getElementById('inner');
+var txtRemain = document.getElementById('remaining');
+var isTracking = false;
+var testFrom, testTo, totalMinutes;
+
+function setTimes() {
+	testFrom = Date.parse(document.getElementById('from').value);
+	testTo   = Date.parse(document.getElementById('to').value);
+	isTracking = true;
+	
+	totalMinutes = (testTo - testFrom) / 60 / 1000;
+}
+
+function update() {
+	var date = new Date();
+	
+	var hours = date.getHours() % 12;
+	if (hours == 0) { hours = 12; }
+	var ampm = (date.getHours() < 12) ? 'AM' : 'PM';
+	
+	var minutes = date.getMinutes();
+	if (minutes < 10) { minutes = '0' + minutes.toString(); }
+	
+	var seconds = date.getSeconds();
+	if (seconds < 10) { seconds = '0' + seconds.toString(); }
+	
+	txtTime.innerHTML = hours + ":" + minutes + ':' + seconds + " " + 
+ampm;
+	
+	if (isTracking) {
+		elapsed = ((date - testFrom) / 1000 / 60);
+		txtElapsed.innerHTML = elapsed.toFixed(0);
+		
+		remaining = ((testTo - date) / 1000 / 60);
+		txtRemain.innerHTML = remaining.toFixed(0);
+		
+		width = 100 * (elapsed / totalMinutes).toFixed(4);
+		
+		if (width >= 100) {
+			width = 100;
+			bar.style.background = "#f00";
+		} else if (width > 95) {
+			bar.style.background = "#ff0";
+		} else {
+			bar.style.background = "#66f";
+		}
+
+		bar.style.width = width + '%';
+	}
+	
+	setTimeout(update, 1000);
+}
+update();
+</script>
+</body>
+</html>
+
